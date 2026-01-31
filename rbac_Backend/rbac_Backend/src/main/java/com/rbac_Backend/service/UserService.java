@@ -9,6 +9,7 @@ import com.rbac_Backend.entity.User;
 import com.rbac_Backend.repository.RoleRepository;
 import com.rbac_Backend.repository.UserRepository;
 import com.rbac_Backend.config.PasswordConfig;
+import com.rbac_Backend.security.CustomUserDetails;
 import com.rbac_Backend.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,18 +46,23 @@ public class UserService {
 
     }
 
-    public AuthResponse login(LoginRequest request){
-        User user =userRepository.findByUsername(request.getUsername())
-                .orElseThrow(()->new RuntimeException("User Not Found..!"));
+    public AuthResponse login(LoginRequest request) {
 
-        if (!passwordEncoder.matches(request.getPassword(),user.getPassword())){
-            throw new RuntimeException("Invalid Credentials..!");
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid Credentials");
         }
-        String response= jwtService.generateToken(user.getUsername());
-        AuthResponse authResponse =new AuthResponse();
-        authResponse.setToken(response);
-        return authResponse;
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+        String token = jwtService.generateToken(userDetails);
+
+        AuthResponse response = new AuthResponse();
+        response.setToken(token);
+        return response;
     }
+
 
     public List<User> getAllUsers() {
        return userRepository.findAll();
