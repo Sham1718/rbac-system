@@ -1,6 +1,6 @@
 # Role-Based Access Control (RBAC) System
 
-## Brief One-Line Summary
+## Summary
 A backend-focused Spring Boot RBAC system implementing JWT authentication, role-based authorization, and permission-level access control using Spring Security.
 
 ---
